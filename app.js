@@ -1,6 +1,6 @@
 import { FaceLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/tasks-vision_bundle.js";
 
-// --- INDICES DE LANDMARKS CLAVE ---
+// --- ÍNDICES DE LANDMARKS CLAVE ---
 const NOSE_TIP = 1;
 const FOREHEAD = 10;
 const CHIN = 152;
@@ -314,7 +314,7 @@ async function renderLoop() {
                 if (!isCentered) {
                     ctx.fillStyle = "#FF0000";
                     ctx.font = "bold 20px sans-serif";
-                    ctx.fillText("¡MANTEN LA CABEZA CENTRADA EN LA BALANZA!", 30, 80);
+                    ctx.fillText("¡MANTÉN LA CABEZA CENTRADA EN LA BALANZA!", 30, 80);
                     sampleStartTime = performance.now() / 1000 - (currentPointSamples.length * (samplingDuration / 60));
                 } else {
                     const elapsed = (performance.now() / 1000) - sampleStartTime;
@@ -434,7 +434,7 @@ async function renderLoop() {
             if (!isCentered) {
                 ctx.fillStyle = "#FF0000";
                 ctx.font = "bold 20px sans-serif";
-                ctx.fillText("MANTEN LA CABEZA CENTRADA EN LA BALANZA!", 30, 80);
+                ctx.fillText("¡MANTÉN LA CABEZA CENTRADA EN LA BALANZA!", 30, 80);
             }
         }
     }
