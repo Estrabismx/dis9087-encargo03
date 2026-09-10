@@ -113,21 +113,26 @@ async function iniciarApp() {
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Infraestructura base cargada.");
     
-    // Añadir un botón o un evento que active la cámara cuando el usuario esté listo
-    // (Los navegadores bloquean la cámara si no es por una interacción del usuario)
+    // Obtenemos la referencia al botón que agregaste en tu HTML
     const botonActivar = document.getElementById('boton-activar-experiencia');
+    
     if (botonActivar) {
+        // Le decimos al botón que preste atención al evento de "clic"
         botonActivar.addEventListener('click', () => {
             
-            // 1. Iniciamos nuestra lógica base (encender cámara)
+            // 1. Iniciamos nuestra lógica base (pedir permisos de cámara)
             iniciarApp();
             
             // 2. Ejecutamos tu función importada de OpenCV
-            // NOTA: Ajusté los IDs para que coincidan exactamente con tu HTML
-            iniciarDetectorMovimiento("videoOculto", "canvasOpenCV");
+            // Nos aseguramos de pasarle los IDs correctos de tus elementos
+            if (typeof iniciarDetectorMovimiento === 'function') {
+                iniciarDetectorMovimiento("videoOculto", "canvasOpenCV");
+            }
             
-            // 3. Ocultar botón tras iniciar
+            // 3. Ocultamos el botón visualmente tras iniciar para limpiar la interfaz
             botonActivar.style.display = 'none'; 
         });
+    } else {
+        console.warn("No se encontró el botón con id 'boton-activar-experiencia' en el HTML.");
     }
 });
