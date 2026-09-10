@@ -53,16 +53,16 @@ function iniciarBucleOpenCV(video, canvas) {
     const kernelMasivo = cv.Mat.ones(11, 11, cv.CV_8U); 
 
     // Configuración base
-    const sensibilidadLuz = 25;
+    const sensibilidadLuz = 20;
     // Ajustamos el mínimo de píxeles porque la imagen es 16 veces más pequeña
-    const minimoPixelesActivacion = 5000 / (escala * escala); 
-    const movimientoEsperadoMax = 80000 / (escala * escala); 
+    const minimoPixelesActivacion = 1000 / (escala * escala); 
+    const movimientoEsperadoMax = 20000 / (escala * escala); 
     
     const UMBRAL_FRAMES_VALIDOS = 4; 
     let contadorFramesMovimiento = 0; 
     
     const blurMinimo = 3;
-    const blurMaximo = 61;
+    const blurMaximo = 121;
     let blurActualSuavizado = 3.0;
     const factorSuavizado = 0.08;
 
@@ -167,9 +167,9 @@ function iniciarBucleOpenCV(video, canvas) {
             const colorValidacion = proporcionValidacion < 1.0 ? new cv.Scalar(255, 165, 0) : new cv.Scalar(0, 255, 0);
             
             // Usamos frameFinal que ahora es de 3 canales (RGB), por lo que los escalares son de 3 valores.
-            cv.rectangle(frameFinal, new cv.Point(origenX, origenYMov), new cv.Point(origenX + anchoMaximoBarra, origenYMov + altoBarra), new cv.Scalar(50, 50, 50), -1);
-            cv.rectangle(frameFinal, new cv.Point(origenX, origenYMov), new cv.Point(origenX + anchoBarraValidacion, origenYMov + altoBarra), colorValidacion, -1);
-            cv.putText(frameFinal, `Blur Level: ${intensidadBlur}`, new cv.Point(origenX, origenYMov - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5, new cv.Scalar(255, 255, 255), 1);
+           // cv.rectangle(frameFinal, new cv.Point(origenX, origenYMov), new cv.Point(origenX + anchoMaximoBarra, origenYMov + altoBarra), new cv.Scalar(50, 50, 50), -1);
+            //cv.rectangle(frameFinal, new cv.Point(origenX, origenYMov), new cv.Point(origenX + anchoBarraValidacion, origenYMov + altoBarra), colorValidacion, -1);
+            //cv.putText(frameFinal, `Blur Level: ${intensidadBlur}`, new cv.Point(origenX, origenYMov - 5), cv.FONT_HERSHEY_SIMPLEX, 0.5, new cv.Scalar(255, 255, 255), 1);
 
             cv.imshow(canvas.id, frameFinal);
 
