@@ -1,0 +1,204 @@
+/*
+
+RESETEO BÁSICO
+
+Estas reglas eliminan los márgenes y rellenos que los navegadores
+ponen por defecto, asegurando que el diseño se vea igual en todos lados.
+*/
+
+{
+margin: 0;
+padding: 0;
+box-sizing: border-box; /* Asegura que el padding no aumente el tamaño de las cajas */
+}
+
+/*
+
+ESTILOS GENERALES DEL CUERPO (BODY)
+
+Aquí definimos el color de fondo general de la página y cómo se
+distribuirá el contenido principal.
+/
+body {
+/ EDITABLE: Familia tipográfica. Puedes cambiarla por 'Arial', 'Roboto', etc. */
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+/* EDITABLE: Color de fondo de toda la página (un gris muy oscuro/casi negro) */
+background-color: #121212; 
+
+/* EDITABLE: Color del texto general (blanco/gris muy claro) */
+color: #e0e0e0;
+
+/* 
+Uso de Flexbox para centrar absolutamente todo el contenido 
+en el medio de la pantalla, tanto vertical como horizontalmente.
+*/
+display: flex;
+justify-content: center; /* Centrado horizontal */
+align-items: center;     /* Centrado vertical */
+
+/* Asegura que el body ocupe al menos el 100% de la altura visible de la pantalla */
+min-height: 100vh;
+
+
+}
+
+/*
+
+CONTENEDOR PRINCIPAL
+
+Esta es la "ventana central" de la que hablamos. Agrupa el título
+y los dos recuadros de video.
+/
+#contenedor-principal {
+/ EDITABLE: Color de fondo de la tarjeta principal (un gris ligeramente más claro que el fondo) */
+background-color: #1e1e1e;
+
+/* EDITABLE: Redondeo de las esquinas del contenedor principal */
+border-radius: 12px;
+
+/* EDITABLE: Espacio interno (padding) entre el borde y el contenido */
+padding: 30px;
+
+/* EDITABLE: Sombra sutil para darle efecto de profundidad (elevación) */
+box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+/* EDITABLE: Ancho máximo para que no se estire demasiado en pantallas gigantes */
+max-width: 1400px;
+
+/* Ocupará casi todo el ancho disponible si la pantalla es más pequeña que max-width */
+width: 95%; 
+
+/* Centra el texto (como el h1) dentro de este contenedor */
+text-align: center;
+
+
+}
+
+/* Estilos específicos para el título principal /
+h1 {
+/ EDITABLE: Tamaño del título principal */
+font-size: 2.5rem;
+
+/* EDITABLE: Espacio hacia abajo (separación con las ventanas) */
+margin-bottom: 30px;
+
+/* EDITABLE: Color del título principal */
+color: #ffffff;
+
+/* EDITABLE: Grosor de la letra */
+font-weight: 300; 
+
+
+}
+
+/*
+
+CONTENEDOR DE LAS VENTANAS (RECUADROS)
+
+Aquí usamos Flexbox nuevamente, pero esta vez para alinear las dos
+ventanas (OpenCV y MediaPipe) una al lado de la otra.
+*/
+#contenedor-ventanas {
+display: flex;
+
+/* EDITABLE: Espacio de separación (hueco) entre las dos ventanas */
+gap: 30px;
+
+/* Alinea las ventanas en el centro horizontalmente */
+justify-content: center; 
+
+/* 
+IMPORTANTE PARA RESPONSIVE: Si la pantalla es pequeña (ej. móviles),
+esto permite que la segunda ventana salte abajo en lugar de aplastarse.
+*/
+flex-wrap: wrap; 
+
+
+}
+
+/*
+
+CADA VENTANA INDIVIDUAL (OPENCV Y MEDIAPIPE)
+
+Estilos para cada uno de los recuadros que contienen el título
+y el lienzo ().
+/
+.ventana {
+/ EDITABLE: Color de fondo específico de cada ventana (un gris aún más oscuro) */
+background-color: #0a0a0a;
+
+/* EDITABLE: Redondeo de las esquinas de cada ventana individual */
+border-radius: 8px;
+
+/* EDITABLE: Espacio interno de cada ventana */
+padding: 20px;
+
+/* EDITABLE: Borde sutil alrededor de cada ventana */
+border: 1px solid #333;
+
+/* 
+Flex-grow: 1 permite que intenten ocupar el mismo espacio disponible,
+pero con un ancho mínimo (min-width) para no achicarse demasiado.
+*/
+flex: 1 1 auto;
+
+/* EDITABLE: Ancho mínimo antes de que la ventana salte hacia abajo en pantallas pequeñas */
+min-width: 320px;
+
+/* EDITABLE: Ancho máximo sugerido para mantener proporciones */
+max-width: 680px; 
+
+
+}
+
+/* Estilos específicos para los subtítulos (h2) de cada ventana /
+.ventana h2 {
+/ EDITABLE: Tamaño de la letra de los subtítulos */
+font-size: 1.2rem;
+
+/* EDITABLE: Espacio hacia abajo (separación con el canvas) */
+margin-bottom: 15px;
+
+/* EDITABLE: Color del subtítulo (un tono azulado/cyan para darle aspecto tecnológico) */
+color: #4db8ff; 
+
+
+}
+
+/*
+
+LIENZOS (CANVAS)
+
+Aquí se proyectarán los videos procesados.
+/
+canvas {
+/ EDITABLE: Color de fondo del canvas mientras el video no carga (pantalla "apagada") */
+background-color: #000000;
+
+/* Obliga al canvas a ocupar el 100% del ancho de su ventana padre */
+width: 100%;
+
+/* Mantiene la altura automática para no deformar la imagen (aspect ratio) */
+height: auto;
+
+/* EDITABLE: Un pequeño redondeo en las esquinas del área de video */
+border-radius: 4px;
+
+/* Obliga a que se comporte como un bloque para centrarlo correctamente si fuera necesario */
+display: block; 
+
+
+}
+
+/*
+
+ELEMENTOS TÉCNICOS OCULTOS
+
+Como especificaste, la cámara original no debe verse directamente.
+Por lo tanto, ocultamos el elemento  por completo mediante CSS.
+/
+#videoOculto {
+/ Esta regla oculta visualmente el elemento por completo */
+display: none;
+}
