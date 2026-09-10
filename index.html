@@ -1,96 +1,52 @@
 <!DOCTYPE html>
-<!-- Declaramos que el idioma principal de la página es español -->
 <html lang="es">
 <head>
-    <!-- Configuración básica de caracteres (permite ñ y tildes) -->
     <meta charset="UTF-8">
-    
-    <!-- Configuración para que la página sea "responsive" (se adapte a pantallas de celulares) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- Título que aparecerá en la pestaña del navegador -->
     <title>Procesamiento Visual: OpenCV & MediaPipe</title>
-
-    <!-- 
-    ======================================================================
-    ESPACIO PARA CSS
-    ======================================================================
-    Aquí enlazamos tu archivo style.css para aplicar los estilos de diseño.
-    -->
+    
+    <!-- Enlace al archivo CSS externo -->
     <link rel="stylesheet" href="style.css">
     
+    <!-- En el <head> o antes de cerrar el <body> -->
+    <!-- Cargamos OpenCV.js de forma asíncrona. Puede tardar un par de segundos en inicializar -->
+    <script async src="https://docs.opencv.org/4.8.0/opencv.js"></script>
+
 </head>
 <body>
 
-    <!-- 
-    ======================================================================
-    CONTENEDOR PRINCIPAL
-    ======================================================================
-    Esta es la "caja" principal que mencionamos. Envolverá todo para que 
-    luego el CSS pueda centrarla fácilmente en la pantalla.
-    -->
     <div id="contenedor-principal">
         
-        <!-- Título principal de la interfaz -->
         <h1>Análisis de Visión Artificial</h1>
 
-        <!-- 
-        ======================================================================
-        CONTENEDOR DE VENTANAS
-        ======================================================================
-        Esta caja agrupará los dos recuadros de video para poder ponerlos 
-        uno al lado del otro.
-        -->
         <div id="contenedor-ventanas">
 
-            <!-- ================= VENTANA 1: OPENCV ================= -->
+            <!-- VENTANA 1: OPENCV -->
             <div class="ventana">
                 <h2>Procesamiento con OpenCV</h2>
-                
-                <!-- 
-                LIENZO OPENCV:
-                Usamos la etiqueta <canvas>. Le damos un identificador (id) único.
-                El JavaScript usará este ID para encontrar este recuadro y dibujar 
-                el video procesado con OpenCV.
-                -->
                 <canvas id="canvasOpenCV" width="640" height="480"></canvas>
             </div>
 
-            <!-- ================= VENTANA 2: MEDIAPIPE ================= -->
+            <!-- VENTANA 2: MEDIAPIPE -->
             <div class="ventana">
                 <h2>Interpretación de MediaPipe</h2>
-                
-                <!-- 
-                LIENZO MEDIAPIPE:
-                Misma lógica, pero con un ID diferente para que JS no los confunda.
-                -->
                 <canvas id="canvasMediaPipe" width="640" height="480"></canvas>
             </div>
 
         </div> 
         
-        <!-- 
-        ======================================================================
-        VIDEO OCULTO (ELEMENTO TÉCNICO)
-        ======================================================================
-        Como indicaste que NO se visualizará la cámara directamente, creamos 
-        este elemento de video, pero más adelante le diremos al CSS que 
-        lo oculte (display: none). 
-        JS necesita que este elemento exista en el HTML para poder recibir la señal.
-        -->
+        <!-- Video oculto (ELEMENTO TÉCNICO) -->
         <video id="videoOculto" width="640" height="480" autoplay playsinline></video>
 
     </div> 
 
-    <!-- 
-    ======================================================================
-    ESPACIO PARA JAVASCRIPT
-    ======================================================================
-    Aquí importamos el archivo .js principal. Se coloca al final para que 
-    el HTML cargue primero antes de ejecutar la lógica.
-    -->
-    
-    <script src="main.js"></script>
 
+<!-- ... final de tu HTML ... -->
+<!-- Primero cargas tus procesadores -->
+<script src="detectorMovimiento.js"></script>
+<script src="detector_ojos.js"></script>
+
+<!-- Al final cargas el orquestador que los usa -->
+<script src="main.js"></script>
 </body>
 </html>
