@@ -1,3 +1,5 @@
+import { iniciarDetectorMovimiento } from './detectorMovimiento.js';
+
 /**
  * main.js - ORQUESTADOR PRINCIPAL
  * Este archivo se encarga de iniciar la cámara web y coordinar el envío de 
@@ -108,4 +110,24 @@ async function iniciarApp() {
 }
 
 // Escuchamos cuando todo el HTML haya terminado de cargar para arrancar la app
-window.addEventListener('DOMContentLoaded', iniciarApp);
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Infraestructura base cargada.");
+    
+    // Añadir un botón o un evento que active la cámara cuando el usuario esté listo
+    // (Los navegadores bloquean la cámara si no es por una interacción del usuario)
+    const botonActivar = document.getElementById('boton-activar-experiencia');
+    if (botonActivar) {
+        botonActivar.addEventListener('click', () => {
+            
+            // 1. Iniciamos nuestra lógica base (encender cámara)
+            iniciarApp();
+            
+            // 2. Ejecutamos tu función importada de OpenCV
+            // NOTA: Ajusté los IDs para que coincidan exactamente con tu HTML
+            iniciarDetectorMovimiento("videoOculto", "canvasOpenCV");
+            
+            // 3. Ocultar botón tras iniciar
+            botonActivar.style.display = 'none'; 
+        });
+    }
+});
