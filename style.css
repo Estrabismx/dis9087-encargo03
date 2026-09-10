@@ -1,14 +1,14 @@
 /* STREAMING_CHUNK: Configurando el reseteo base de la pagina */
 
-{
+* {
 margin: 0;
 padding: 0;
 box-sizing: border-box;
 }
 
-/* STREAMING_CHUNK: Aplicando estilos generales al cuerpo (body) /
+/* STREAMING_CHUNK: Aplicando estilos generales al cuerpo (body) */
 body {
-/ EDITABLE: Tipografia y colores generales */
+/* EDITABLE: Tipografia y colores generales */
 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 background-color: #121212;
 color: #e0e0e0;
@@ -21,10 +21,9 @@ min-height: 100vh;
 
 
 }
-
-/* STREAMING_CHUNK: Disenando el contenedor principal de la aplicacion /
 #contenedor-principal {
-/ EDITABLE: Color de fondo y redondeo de la tarjeta principal */
+/* STREAMING_CHUNK: Disenando el contenedor principal de la aplicacion */
+/* EDITABLE: Color de fondo y redondeo de la tarjeta principal */
 background-color: #1e1e1e;
 border-radius: 12px;
 padding: 30px;
@@ -38,27 +37,28 @@ text-align: center;
 
 }
 
-/* STREAMING_CHUNK: Estilizando los titulos /
+/* STREAMING_CHUNK: Estilizando los titulos */
 h1 {
-/ EDITABLE: Tamano y color del titulo principal */
+/* EDITABLE: Tamano y color del titulo principal */
 font-size: 2.5rem;
 margin-bottom: 30px;
 color: #ffffff;
 font-weight: 300;
 }
 
-/* STREAMING_CHUNK: Organizando la cuadricula de las ventanas /
+
+/* STREAMING_CHUNK: Organizando la cuadricula de las ventanas */
 #contenedor-ventanas {
-/ Uso de Flexbox para poner los videos lado a lado /
+/* Uso de Flexbox para poner los videos lado a lado */
 display: flex;
-gap: 30px; / EDITABLE: Espaciado entre ventanas /
+gap: 30px; /* EDITABLE: Espaciado entre ventanas */
 justify-content: center;
-flex-wrap: wrap; / Permite que colapsen en pantallas pequenas */
+flex-wrap: wrap; /* Permite que colapsen en pantallas pequenas */
 }
 
-/* STREAMING_CHUNK: Definiendo la apariencia de cada ventana individual /
+/* STREAMING_CHUNK: Definiendo la apariencia de cada ventana individual */
 .ventana {
-/ EDITABLE: Fondo de cada caja de video */
+/* EDITABLE: Fondo de cada caja de video */
 background-color: #0a0a0a;
 border-radius: 8px;
 padding: 20px;
@@ -78,9 +78,9 @@ margin-bottom: 15px;
 color: #4db8ff;
 }
 
-/* STREAMING_CHUNK: Ajustando los lienzos y ocultando la camara base /
+/* STREAMING_CHUNK: Ajustando los lienzos y ocultando la camara base */
 canvas {
-/ EDITABLE: Fondo de los lienzos mientras no hay video */
+/* EDITABLE: Fondo de los lienzos mientras no hay video */
 background-color: #000000;
 width: 100%;
 height: auto;
