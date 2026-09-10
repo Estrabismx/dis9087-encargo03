@@ -49,11 +49,11 @@ function iniciarBucleOpenCV(video, canvas) {
     const movimientoEsperadoMax = 80000;
     
     // 1. Umbral de frames: ¿Cuántos frames seguidos debe haber movimiento para activar el efecto?
-    const UMBRAL_FRAMES_VALIDOS = 4; 
+    const UMBRAL_FRAMES_VALIDOS = 8; 
     let contadorFramesMovimiento = 0; 
     
     const blurMinimo = 3;
-    const blurMaximo = 61;
+    const blurMaximo = 101;
     let blurActualSuavizado = 3.0;
     const factorSuavizado = 0.08;
 
