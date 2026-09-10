@@ -46,6 +46,29 @@ color: #ffffff;
 font-weight: 300;
 }
 
+/* ======================================================================
+ESTILOS DEL BOTÓN DE ACTIVACIÓN
+====================================================================== */
+#boton-activar-experiencia {
+/* Valores rescatados de tu código original */
+padding: 10px 20px;
+font-size: 16px;
+margin-bottom: 20px;
+cursor: pointer;
+border-radius: 5px;
+background-color: #333;
+color: white;
+border: none;
+
+/* Transición suave para cuando pases el mouse por encima */
+transition: background-color 0.3s ease;
+
+
+}
+
+#boton-activar-experiencia:hover {
+background-color: #555; /* Un tono un poco más claro al hacer hover */
+}
 
 /* STREAMING_CHUNK: Organizando la cuadricula de las ventanas */
 #contenedor-ventanas {
