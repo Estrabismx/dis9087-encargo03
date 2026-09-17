@@ -20,11 +20,14 @@ const FPS_LIMIT = 20;
 const frameInterval = 1000 / FPS_LIMIT;
 let isProcessingMp = false; 
 
+// Control de inercia para la opacidad de OpenCV
+let opacidadActual = 100; // Empieza 100% visible
+
 // ==========================================
-// 3. INICIALIZACIÓN DE MEDIAPIPE (Gaze Tracking con Delay)
+// 3. INICIALIZACIÓN DE MEDIAPIPE (Gaze Tracking)
 // ==========================================
 let lastPointerUpdate = 0;
-const POINTER_DELAY_MS = 150; // Milisegundos de espera entre cada movimiento
+const POINTER_DELAY_MS = 150; 
 
 function iniciarMediaPipe() {
     loadingText.innerText = "Inicializando MediaPipe...";
@@ -45,7 +48,6 @@ function iniciarMediaPipe() {
             
             const currentTime = performance.now();
             
-            // Retraso para reducir sensibilidad
             if (currentTime - lastPointerUpdate > POINTER_DELAY_MS) {
                 lastPointerUpdate = currentTime;
 
@@ -57,22 +59,18 @@ function iniciarMediaPipe() {
                 const topEdge = landmarks[10];    
                 const bottomEdge = landmarks[152];
 
-                // YAW (Giro Izquierda - Derecha) 
                 const faceWidth = rightEdge.x - leftEdge.x;
                 const yawRatio = (nose.x - leftEdge.x) / faceWidth; 
 
-                // PITCH (Inclinación Arriba - Abajo)
                 const faceHeight = bottomEdge.y - topEdge.y;
                 const pitchRatio = (nose.y - topEdge.y) / faceHeight;
 
-                // MAPEO A LA PANTALLA
                 let screenX = 0.5 - (yawRatio - 0.5) * 3; 
                 let screenY = 0.5 + (pitchRatio - 0.5) * 3;
 
                 screenX = Math.max(0, Math.min(1, screenX));
                 screenY = Math.max(0, Math.min(1, screenY));
 
-                // Aplicar coordenadas
                 pointer.style.left = `${screenX * ventanaMp.clientWidth}px`;
                 pointer.style.top = `${screenY * ventanaMp.clientHeight}px`;
             }
@@ -125,7 +123,7 @@ async function iniciarCamara() {
 }
 
 // ==========================================
-// 6. BUCLE DE PROCESAMIENTO (THROTTLED)
+// 6. BUCLE DE PROCESAMIENTO
 // ==========================================
 function procesarFrame() {
     requestAnimationFrame(procesarFrame);
@@ -136,7 +134,7 @@ function procesarFrame() {
 
     if (videoMp.readyState !== videoMp.HAVE_ENOUGH_DATA || videoMp.videoWidth === 0) return;
 
-    // --- A. MEDIA PIPE (Con candado) ---
+    // --- A. MEDIA PIPE ---
     if (!isProcessingMp) {
         isProcessingMp = true;
         faceMesh.send({ image: videoMp })
@@ -144,7 +142,7 @@ function procesarFrame() {
             .finally(() => { isProcessingMp = false; });
     }
 
-    // --- B. OPEN CV (Alta Sensibilidad y Opacidad a 0) ---
+    // --- B. OPEN CV ---
     try {
         const alto = 240;
         const ancho = Math.floor(alto * (videoMp.videoWidth / videoMp.videoHeight));
@@ -165,17 +163,27 @@ function procesarFrame() {
             const diff = new cv.Mat();
             const thresh = new cv.Mat();
             
-            // Umbral en 15 (Alta sensibilidad)
             cv.absdiff(prevFrameMat, gray, diff);
-            cv.threshold(diff, thresh, 20, 255, cv.THRESH_BINARY);
+            cv.threshold(diff, thresh, 25, 255, cv.THRESH_BINARY);
             
             const nonZero = cv.countNonZero(thresh);
             const totalPixels = ancho * alto;
             const movementPercentage = (nonZero / totalPixels) * 100;
             
-            // Multiplicador agresivo para llegar a negro total rápidamente
-            const opacidad = Math.max(0, 100 - (movementPercentage * 8)); 
-            videoCv.style.opacity = `${opacidad / 100}`;
+            // Calculamos cuánto debería oscurecerse según el movimiento actual
+            const opacidadObjetivo = Math.max(0, 100 - (movementPercentage * 6)); 
+            
+            // Lógica de inercia (Ataque rápido, Liberación lenta)
+            if (opacidadObjetivo < opacidadActual) {
+                // Si hay movimiento, cae directo al objetivo (se oscurece rápido)
+                opacidadActual = opacidadObjetivo;
+            } else {
+                // Si deja de haber movimiento, se aclara lentamente (sumando 2.5% por fotograma)
+                opacidadActual += 2.5;
+                if (opacidadActual > 100) opacidadActual = 100;
+            }
+
+            videoCv.style.opacity = `${opacidadActual / 100}`;
 
             diff.delete();
             thresh.delete();
