@@ -1,138 +1,195 @@
-import { iniciarDetectorMovimiento } from './detectorMovimiento.js';
+// ==========================================
+// 1. REFERENCIAS AL DOM
+// ==========================================
+const videoMp = document.getElementById('video-mp');
+const videoCv = document.getElementById('video-cv');
+const ventanaMp = document.getElementById('ventana-mp');
+const pointer = document.getElementById('puntero');
+const loadingText = document.getElementById('loading-text');
 
-/**
- * main.js - ORQUESTADOR PRINCIPAL
- * Este archivo se encarga de iniciar la cámara web y coordinar el envío de 
- * fotogramas a los procesadores externos (OpenCV y MediaPipe).
- */
+// ==========================================
+// 2. CONFIGURACIÓN DE RENDIMIENTO
+// ==========================================
+const canvasLigero = document.createElement('canvas');
+const ctx = canvasLigero.getContext('2d', { willReadFrequently: true });
 
-// 1. OBTENER REFERENCIAS A LOS ELEMENTOS DEL HTML
-// Guardamos en variables los elementos que creamos en index.html para poder controlarlos.
-const videoOculto = document.getElementById('videoOculto');
-const canvasOpenCV = document.getElementById('canvasOpenCV');
-const canvasMediaPipe = document.getElementById('canvasMediaPipe');
+let faceMesh;
+let prevFrameMat = null;
+let lastProcessTime = 0;
+const FPS_LIMIT = 20; 
+const frameInterval = 1000 / FPS_LIMIT;
+let isProcessingMp = false; 
 
-// 2. CONFIGURACIÓN DE LA CÁMARA
-// Aquí definimos qué tipo de video queremos (resolución, usar la cámara frontal, etc.)
-/* EDITABLE: Puedes cambiar los valores de 'width' y 'height' si necesitas otra resolución base */
-const restriccionesCamara = {
-    video: {
-        width: 640,
-        height: 480,
-        facingMode: "user" // "user" intenta usar la cámara frontal (webcam estándar)
-    }
-};
+// ==========================================
+// 3. INICIALIZACIÓN DE MEDIAPIPE (Gaze Tracking con Delay)
+// ==========================================
+let lastPointerUpdate = 0;
+const POINTER_DELAY_MS = 150; // Milisegundos de espera entre cada movimiento
 
-/**
- * Función para encender la cámara web.
- * Usa la API 'navigator.mediaDevices.getUserMedia' que es el estándar moderno.
- */
-async function iniciarCamara() {
-    try {
-        // Pedimos permiso al usuario y obtenemos el "flujo" (stream) de video
-        const stream = await navigator.mediaDevices.getUserMedia(restriccionesCamara);
-        
-        // Conectamos ese flujo de video al elemento <video> oculto en el HTML
-        videoOculto.srcObject = stream;
+function iniciarMediaPipe() {
+    loadingText.innerText = "Inicializando MediaPipe...";
+    
+    faceMesh = new FaceMesh({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
 
-        // Esperamos a que el video esté listo para reproducirse
-        return new Promise((resolve) => {
-            videoOculto.onloadedmetadata = () => {
-                // Ajustamos el tamaño interno de los canvas para que coincida exactamente con la cámara
-                canvasOpenCV.width = videoOculto.videoWidth;
-                canvasOpenCV.height = videoOculto.videoHeight;
-                canvasMediaPipe.width = videoOculto.videoWidth;
-                canvasMediaPipe.height = videoOculto.videoHeight;
+    faceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: false, 
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+    });
+
+    faceMesh.onResults((results) => {
+        if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+            
+            const currentTime = performance.now();
+            
+            // Retraso para reducir sensibilidad
+            if (currentTime - lastPointerUpdate > POINTER_DELAY_MS) {
+                lastPointerUpdate = currentTime;
+
+                const landmarks = results.multiFaceLandmarks[0];
                 
-                resolve(); // Avisamos que la cámara ya está lista
-            };
-        });
-    } catch (error) {
-        console.error("Error al acceder a la cámara web:", error);
-        alert("No se pudo acceder a la cámara. Revisa los permisos de tu navegador.");
-    }
-}
+                const nose = landmarks[1];        
+                const leftEdge = landmarks[234];  
+                const rightEdge = landmarks[454]; 
+                const topEdge = landmarks[10];    
+                const bottomEdge = landmarks[152];
 
-/**
- * El Bucle Principal (Game Loop / Processing Loop)
- * Esta función se llama a sí misma constantemente (muchas veces por segundo)
- * para capturar cada "foto" (frame) del video y procesarla.
- */
-function procesarFrames() {
-    // Si el video está pausado o terminó, detenemos el procesamiento
-    if (videoOculto.paused || videoOculto.ended) return;
+                // YAW (Giro Izquierda - Derecha) 
+                const faceWidth = rightEdge.x - leftEdge.x;
+                const yawRatio = (nose.x - leftEdge.x) / faceWidth; 
 
-    // =========================================================================
-    // AQUÍ ES DONDE SE CONECTAN TUS OTROS ARCHIVOS (OpenCV y MediaPipe)
-    // =========================================================================
-    
-    // 1. LLAMADO A OPENCV (detectorMovimiento.js)
-    // Verificamos si la función principal de tu archivo de OpenCV existe
-    if (typeof procesarConOpenCV === 'function') {
-        // Le pasamos el video original y el canvas donde debe dibujar
-        procesarConOpenCV(videoOculto, canvasOpenCV); 
-    } else {
-        // Mensaje temporal por si aún no has conectado el archivo
-        console.log("Esperando función procesarConOpenCV() desde detectorMovimiento.js");
-    }
+                // PITCH (Inclinación Arriba - Abajo)
+                const faceHeight = bottomEdge.y - topEdge.y;
+                const pitchRatio = (nose.y - topEdge.y) / faceHeight;
 
-    // 2. LLAMADO A MEDIAPIPE (detector_ojos.js)
-    // Verificamos si la función principal de tu archivo de MediaPipe existe
-    if (typeof procesarConMediaPipe === 'function') {
-        // Le pasamos el video original y el canvas donde debe dibujar
-        procesarConMediaPipe(videoOculto, canvasMediaPipe);
-    } else {
-         // Mensaje temporal por si aún no has conectado el archivo
-        console.log("Esperando función procesarConMediaPipe() desde detector_ojos.js");
-    }
+                // MAPEO A LA PANTALLA
+                let screenX = 0.5 - (yawRatio - 0.5) * 3; 
+                let screenY = 0.5 + (pitchRatio - 0.5) * 3;
 
-    // =========================================================================
+                screenX = Math.max(0, Math.min(1, screenX));
+                screenY = Math.max(0, Math.min(1, screenY));
 
-    // requestAnimationFrame es el método óptimo para repetir funciones visuales.
-    // Le dice al navegador: "antes de pintar la siguiente pantalla, vuelve a ejecutar procesarFrames"
-    requestAnimationFrame(procesarFrames);
-}
-
-/**
- * Función de Arranque (Init)
- * Se ejecuta al cargar la página para poner todo en marcha.
- */
-async function iniciarApp() {
-    console.log("Iniciando aplicación...");
-    
-    // 1. Esperamos a que la cámara encienda correctamente
-    await iniciarCamara();
-    
-    // 2. Una vez encendida, empezamos a procesar los fotogramas sin parar
-    procesarFrames();
-    
-    console.log("Cámara iniciada y procesamiento en curso (oculto).");
-}
-
-// Escuchamos cuando todo el HTML haya terminado de cargar para arrancar la app
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Infraestructura base cargada.");
-    
-    // Obtenemos la referencia al botón que agregaste en tu HTML
-    const botonActivar = document.getElementById('boton-activar-experiencia');
-    
-    if (botonActivar) {
-        // Le decimos al botón que preste atención al evento de "clic"
-        botonActivar.addEventListener('click', () => {
-            
-            // 1. Iniciamos nuestra lógica base (pedir permisos de cámara)
-            iniciarApp();
-            
-            // 2. Ejecutamos tu función importada de OpenCV
-            // Nos aseguramos de pasarle los IDs correctos de tus elementos
-            if (typeof iniciarDetectorMovimiento === 'function') {
-                iniciarDetectorMovimiento("videoOculto", "canvasOpenCV");
+                // Aplicar coordenadas
+                pointer.style.left = `${screenX * ventanaMp.clientWidth}px`;
+                pointer.style.top = `${screenY * ventanaMp.clientHeight}px`;
             }
-            
-            // 3. Ocultamos el botón visualmente tras iniciar para limpiar la interfaz
-            botonActivar.style.display = 'none'; 
-        });
+        }
+    });
+
+    verificarMotores();
+}
+
+// ==========================================
+// 4. VERIFICACIÓN DE OPENCV
+// ==========================================
+function verificarMotores() {
+    if (typeof cv !== 'undefined' && cv.Mat) {
+        iniciarCamara();
     } else {
-        console.warn("No se encontró el botón con id 'boton-activar-experiencia' en el HTML.");
+        loadingText.innerText = "Esperando OpenCV...";
+        setTimeout(verificarMotores, 500);
     }
-});
+}
+
+// ==========================================
+// 5. INICIALIZACIÓN DE LA CÁMARA
+// ==========================================
+async function iniciarCamara() {
+    loadingText.innerText = "Iniciando Cámara...";
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 1280, height: 720, facingMode: 'user' } 
+        });
+        
+        videoMp.srcObject = stream;
+        videoCv.srcObject = stream;
+        
+        videoMp.onloadedmetadata = () => {
+            videoMp.play();
+            videoCv.play();
+            
+            const loadingScreen = document.getElementById('loading');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 500);
+            }
+            procesarFrame(); 
+        };
+    } catch (err) {
+        console.error(err);
+        loadingText.innerText = "Error de Cámara. Revisa permisos.";
+    }
+}
+
+// ==========================================
+// 6. BUCLE DE PROCESAMIENTO (THROTTLED)
+// ==========================================
+function procesarFrame() {
+    requestAnimationFrame(procesarFrame);
+
+    const currentTime = performance.now();
+    if (currentTime - lastProcessTime < frameInterval) return;
+    lastProcessTime = currentTime;
+
+    if (videoMp.readyState !== videoMp.HAVE_ENOUGH_DATA || videoMp.videoWidth === 0) return;
+
+    // --- A. MEDIA PIPE (Con candado) ---
+    if (!isProcessingMp) {
+        isProcessingMp = true;
+        faceMesh.send({ image: videoMp })
+            .catch(err => console.error("Error MP:", err))
+            .finally(() => { isProcessingMp = false; });
+    }
+
+    // --- B. OPEN CV (Alta Sensibilidad y Opacidad a 0) ---
+    try {
+        const alto = 240;
+        const ancho = Math.floor(alto * (videoMp.videoWidth / videoMp.videoHeight));
+        if (ancho === 0) return; 
+
+        canvasLigero.width = ancho;
+        canvasLigero.height = alto;
+        ctx.drawImage(videoMp, 0, 0, ancho, alto);
+        
+        const imageData = ctx.getImageData(0, 0, ancho, alto);
+        const src = cv.matFromImageData(imageData);
+        const gray = new cv.Mat();
+        
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        cv.GaussianBlur(gray, gray, new cv.Size(21, 21), 0);
+
+        if (prevFrameMat) {
+            const diff = new cv.Mat();
+            const thresh = new cv.Mat();
+            
+            // Umbral en 15 (Alta sensibilidad)
+            cv.absdiff(prevFrameMat, gray, diff);
+            cv.threshold(diff, thresh, 20, 255, cv.THRESH_BINARY);
+            
+            const nonZero = cv.countNonZero(thresh);
+            const totalPixels = ancho * alto;
+            const movementPercentage = (nonZero / totalPixels) * 100;
+            
+            // Multiplicador agresivo para llegar a negro total rápidamente
+            const opacidad = Math.max(0, 100 - (movementPercentage * 8)); 
+            videoCv.style.opacity = `${opacidad / 100}`;
+
+            diff.delete();
+            thresh.delete();
+            prevFrameMat.delete(); 
+        }
+
+        prevFrameMat = gray.clone(); 
+        src.delete();
+        gray.delete();
+        
+    } catch (err) {
+        console.error("Error en OpenCV:", err);
+    }
+}
+
+// Ejecución
+iniciarMediaPipe();
