@@ -15,8 +15,9 @@ La intención final fue: Construir un sistema que visualice esa paradoja: mientr
 ###     OBJETIVO   ###
 
 Este proyecto fusiona dos comportamientos diarios presentes en la rutina de millones de personas, el cual requiere de 2 situaciones. 
-    1. Una persona concentrada "Scrolleando en su celular", aislándose del entorno y toda acción que pase a su alrededor 
-    2. El transcurso diario que está presente en situaciones cotidianas. 
+
+1. Una persona concentrada "Scrolleando en su celular", aislándose del entorno y toda acción que pase a su alrededor 
+2. El transcurso diario que está presente en situaciones cotidianas. 
 
 Quisimos revelar el cómo se interpretaría de manera visual este comportamiento, activando derivantes de movimiento y concentración del sujeto mediante un punto fijo en la pantalla. 
 
