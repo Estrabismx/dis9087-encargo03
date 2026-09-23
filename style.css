@@ -1,0 +1,120 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #111;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+#loading {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    z-index: 9999; transition: opacity 0.5s ease;
+}
+
+.spinner {
+    width: 50px; height: 50px;
+    border: 4px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #00ffcc; border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- PANTALLA DIVIDIDA --- */
+#pantalla-dividida {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+}
+
+.ventana {
+    position: relative;
+    width: 50%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+/* Borde separador en el medio */
+#ventana-mp {
+    border-right: 2px solid #333;
+}
+
+/* Títulos descriptivos */
+.titulo-ventana {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    z-index: 10;
+    color: white;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1); /* Efecto espejo */
+}
+
+/* --- EFECTOS VISUALES --- */
+#ventana-cv {
+    transition: filter 0.15s ease-out; /* Suaviza el cambio de contraste */
+}
+
+#puntero {
+    position: absolute;
+    width: 32px;
+    height: 32px;
+    background-color: transparent;
+    border: 2px solid #00ffcc;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; 
+    z-index: 20;
+    
+    /* La transición dictará la suavidad con la que se mueve entre las actualizaciones */
+    transition: top 0.15s ease-out, left 0.15s ease-out;
+    box-shadow: 0 0 10px rgba(0, 255, 204, 0.5), inset 0 0 10px rgba(0, 255, 204, 0.5);
+}
+
+/* Línea horizontal de la mira */
+#puntero::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    right: -8px;
+    height: 2px;
+    background-color: #00ffcc;
+    transform: translateY(-50%);
+    box-shadow: 0 0 5px #00ffcc;
+}
+
+/* Línea vertical de la mira */
+#puntero::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    bottom: -8px;
+    width: 2px;
+    background-color: #00ffcc;
+    transform: translateX(-50%);
+    box-shadow: 0 0 5px #00ffcc;
+}
