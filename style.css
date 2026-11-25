@@ -4,40 +4,245 @@
     box-sizing: border-box;
 }
 
+:root {
+    --acento: #00ffcc;
+    --alerta: #ff6b6b;
+    --carcasa: #17171c;
+    --carcasa-borde: #2a2a32;
+}
+
 body, html {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background-color: #111;
+    background-color: #0b0b0f;
     font-family: system-ui, -apple-system, sans-serif;
 }
 
+/* --- PANTALLA DE CARGA --- */
 #loading {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    inset: 0;
     background-color: #1a1a1a;
     color: #ffffff;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
-    z-index: 9999; transition: opacity 0.5s ease;
+    text-align: center;
+    padding: 20px;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+#loading h2 {
+    font-size: clamp(16px, 4vw, 22px);
+    font-weight: 500;
 }
 
 .spinner {
     width: 50px; height: 50px;
     border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top-color: #00ffcc; border-radius: 50%;
+    border-top-color: var(--acento); border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* --- PANTALLA DIVIDIDA --- */
-#pantalla-dividida {
-    display: flex;
+/* ==========================================
+   ESCENA + DISPOSITIVO (Escritorio: TV)
+   ========================================== */
+.escena {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(ellipse at 50% 35%, #23232b 0%, #111116 55%, #08080a 100%);
 }
 
+.dispositivo {
+    /* Ancho de pantalla 16:9 que siempre entra en el viewport (descontando marco + soporte) */
+    --pantalla-w: min(88vw, calc((100dvh - 195px) * 16 / 9));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.carcasa {
+    position: relative;
+    padding: 14px 14px 56px;
+    background: linear-gradient(180deg, #202027 0%, var(--carcasa) 100%);
+    border: 1px solid var(--carcasa-borde);
+    border-radius: 14px;
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        0 0 0 2px #0a0a0d,
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.pantalla {
+    position: relative;
+    display: flex;
+    width: var(--pantalla-w);
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: #000;
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px #000;
+    isolation: isolate;
+}
+
+/* Reflejo de vidrio + líneas de barrido muy sutiles */
+.pantalla::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    pointer-events: none;
+    background:
+        linear-gradient(125deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0) 38%),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.12) 0 1px, transparent 1px 3px);
+    box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.55);
+}
+
+.marca {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #6b6b78;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3em;
+}
+
+/* Luz de estado: esquina inferior izquierda del marco */
+.led {
+    position: absolute;
+    bottom: 25px;
+    left: 26px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--acento);
+    box-shadow: 0 0 8px var(--acento);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.carcasa.apagado .led {
+    background: var(--alerta);
+    box-shadow: 0 0 8px var(--alerta);
+}
+
+/* --- BOTÓN DE CÁMARA (Escritorio: botón principal del TV) --- */
+.btn-camara {
+    --color-btn: var(--acento);
+    --brillo-btn: rgba(0, 255, 204, 0.35);
+    position: absolute;
+    bottom: 8px;
+    right: 18px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 18px 0 12px;
+    border: 1.5px solid var(--color-btn);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #26262e, #15151a);
+    color: var(--color-btn);
+    font: 600 13px/1 system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    z-index: 45;
+    box-shadow: 0 0 12px var(--brillo-btn), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    transition: color 0.2s, border-color 0.2s, transform 0.1s, box-shadow 0.2s, background 0.2s;
+}
+
+.btn-camara svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+}
+
+.btn-camara:hover {
+    background: linear-gradient(180deg, #2e2e37, #1a1a20);
+    box-shadow: 0 0 20px var(--brillo-btn), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+.btn-camara:active { transform: scale(0.96); }
+.btn-camara:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+.btn-camara:disabled { opacity: 0.5; cursor: wait; }
+
+.carcasa.apagado .btn-camara {
+    --color-btn: var(--alerta);
+    --brillo-btn: rgba(255, 107, 107, 0.4);
+}
+
+/* --- PANTALLA APAGADA --- */
+.aviso-apagado {
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #050507;
+    color: #e8e8ee;
+    text-align: center;
+    animation: apagar-tv 0.35s ease-out;
+}
+
+.aviso-apagado[hidden] { display: none; }
+
+.aviso-apagado p {
+    font-size: clamp(14px, 1.6vw, 20px);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.aviso-apagado small {
+    color: #8a8a96;
+    font-size: clamp(11px, 1vw, 13px);
+}
+
+@keyframes apagar-tv {
+    0%   { transform: scale(1, 0.01); opacity: 0.2; }
+    100% { transform: scale(1, 1);    opacity: 1; }
+}
+
+.isla { display: none; }
+
+/* Soporte del televisor */
+.soporte {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cuello {
+    width: 70px;
+    height: 46px;
+    background: linear-gradient(90deg, #121216, #26262d 50%, #121216);
+    clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+}
+
+.base {
+    width: min(320px, 40vw);
+    height: 10px;
+    border-radius: 6px 6px 3px 3px;
+    background: linear-gradient(180deg, #2a2a32, #141418);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* ==========================================
+   VISORES
+   ========================================== */
 .ventana {
     position: relative;
     width: 50%;
@@ -54,67 +259,199 @@ body, html {
 /* Títulos descriptivos */
 .titulo-ventana {
     position: absolute;
-    top: 15px;
-    left: 15px;
+    top: 12px;
+    left: 12px;
     z-index: 10;
     color: white;
     background: rgba(0, 0, 0, 0.6);
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: clamp(11px, 1.1vw, 14px);
+    font-weight: 600;
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
 }
 
 video {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     transform: scaleX(-1); /* Efecto espejo */
 }
 
-/* --- EFECTOS VISUALES --- */
-#ventana-cv {
-    transition: filter 0.15s ease-out; /* Suaviza el cambio de contraste */
+#video-cv {
+    will-change: opacity;
 }
 
+/* --- PUNTERO / MIRA --- */
 #puntero {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 32px;
     height: 32px;
-    background-color: transparent;
-    border: 2px solid #00ffcc;
+    margin: -16px 0 0 -16px; /* centra la mira en el punto */
+    border: 2px solid var(--acento);
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none; 
+    pointer-events: none;
     z-index: 20;
-    
-    /* La transición dictará la suavidad con la que se mueve entre las actualizaciones */
-    transition: top 0.15s ease-out, left 0.15s ease-out;
+    color: var(--acento);
     box-shadow: 0 0 10px rgba(0, 255, 204, 0.5), inset 0 0 10px rgba(0, 255, 204, 0.5);
+    /* Se mueve con transform (GPU) en vez de top/left para no forzar layout */
+    transform: translate3d(-100px, -100px, 0);
+    transition: transform 0.15s ease-out;
+    will-change: transform;
 }
 
-/* Línea horizontal de la mira */
-#puntero::before {
+#puntero.desenfocado {
+    border-color: var(--alerta);
+    color: var(--alerta);
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5), inset 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+/* Líneas de la mira (heredan el color del puntero) */
+#puntero::before,
+#puntero::after {
     content: '';
     position: absolute;
+    background-color: currentColor;
+    box-shadow: 0 0 5px currentColor;
+}
+
+#puntero::before {
     top: 50%;
     left: -8px;
     right: -8px;
     height: 2px;
-    background-color: #00ffcc;
     transform: translateY(-50%);
-    box-shadow: 0 0 5px #00ffcc;
 }
 
-/* Línea vertical de la mira */
 #puntero::after {
-    content: '';
-    position: absolute;
     left: 50%;
     top: -8px;
     bottom: -8px;
     width: 2px;
-    background-color: #00ffcc;
     transform: translateX(-50%);
-    box-shadow: 0 0 5px #00ffcc;
+}
+
+/* ==========================================
+   MÓVIL: CELULAR con un visor encima y otro debajo
+   ========================================== */
+@media (max-width: 768px) {
+    .dispositivo {
+        /* Pantalla 9:19.5 que entra en el viewport con margen para el marco */
+        --pantalla-w: min(calc(92vw - 24px), calc((100dvh - 56px) * 9 / 19.5));
+    }
+
+    .carcasa {
+        padding: 10px;
+        border-radius: 46px;
+        background: linear-gradient(145deg, #2b2b33 0%, #121216 100%);
+        border: 1px solid #3a3a44;
+        box-shadow:
+            0 24px 50px rgba(0, 0, 0, 0.65),
+            0 0 0 2px #0a0a0d,
+            inset 0 0 0 2px #0d0d10;
+    }
+
+    /* Botones laterales */
+    .carcasa::before,
+    .carcasa::after {
+        content: '';
+        position: absolute;
+        width: 3px;
+        background: #2f2f38;
+        border-radius: 2px;
+    }
+    .carcasa::before { left: -4px; top: 18%; height: 9%; box-shadow: 0 calc(var(--pantalla-w) * 0.3) 0 #2f2f38; }
+    .carcasa::after  { right: -4px; top: 24%; height: 13%; }
+
+    .pantalla {
+        flex-direction: column;
+        aspect-ratio: 9 / 19.5;
+        border-radius: 36px;
+    }
+
+    .pantalla::after {
+        background: linear-gradient(150deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0) 35%);
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.45);
+    }
+
+    /* Isla / cámara frontal */
+    .isla {
+        display: block;
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 30%;
+        height: 24px;
+        border-radius: 14px;
+        background: #000;
+        z-index: 40;
+    }
+
+    .ventana {
+        width: 100%;
+        height: 50%;
+    }
+
+    #ventana-mp {
+        border-right: none;
+        border-bottom: 2px solid #333;
+    }
+
+    /* El título del visor superior baja para no chocar con la isla */
+    #ventana-mp .titulo-ventana { top: 44px; }
+
+    .titulo-ventana {
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    .marca, .led, .soporte { display: none; }
+
+    /* Botón en pantalla, estilo control de app, centrado abajo */
+    .btn-camara {
+        bottom: 26px;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 52px;
+        height: 52px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        background: rgba(0, 0, 0, 0.55);
+        box-shadow: none;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        -webkit-tap-highlight-color: transparent;
+    }
+    .btn-camara svg { width: 24px; height: 24px; }
+    .btn-camara:active { transform: translateX(-50%) scale(0.92); }
+    .btn-camara:hover { box-shadow: none; background: rgba(0, 0, 0, 0.55); }
+
+    /* En móvil solo el ícono; el texto queda para lectores de pantalla */
+    .btn-texto {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+        white-space: nowrap;
+    }
+
+    .aviso-apagado p { font-size: 16px; }
+    .aviso-apagado small { font-size: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 3s; }
+    #puntero { transition: none; }
+    .aviso-apagado { animation: none; }
 }

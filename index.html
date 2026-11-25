@@ -2,41 +2,79 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visión Web - Panel Dual</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Focus Scroll: mientras más concentrado estás en tu pantalla, más desaparece el entorno.">
+    <meta name="theme-color" content="#0b0b0f">
+    <title>Focus Scroll - Visión Web</title>
+
+    <!-- Abrir conexiones con los CDN lo antes posible -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://docs.opencv.org">
+
     <link rel="stylesheet" href="style.css">
-    
-    <!-- Carga clásica, síncrona y segura -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-    <script src="https://docs.opencv.org/4.8.0/opencv.js" type="text/javascript"></script>
+
+    <!-- Scripts no bloqueantes: la página se pinta mientras se descargan los motores -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous" defer></script>
+    <script src="https://docs.opencv.org/4.8.0/opencv.js" async></script>
+    <script src="main.js" defer></script>
 </head>
 <body>
 
-    <div id="loading">
+    <div id="loading" role="status" aria-live="polite">
         <div class="spinner"></div>
         <h2 id="loading-text">Cargando Motores de IA...</h2>
     </div>
 
-    <!-- PANTALLA DIVIDIDA -->
-    <div id="pantalla-dividida">
-        
-        <!-- VENTANA 1: MediaPipe (Tu Iris) -->
-        <div id="ventana-mp" class="ventana">
-            <h3 class="titulo-ventana">Tu Iris (¿Dónde Mirás?)</h3>
-            <video id="video-mp" playsinline muted></video>
-            <div id="puntero"></div>
+    <main class="escena">
+        <!-- Escritorio: televisor · Móvil: celular -->
+        <div class="dispositivo">
+            <div class="carcasa">
+                <span class="isla" aria-hidden="true"></span>
+
+                <!-- PANTALLA DIVIDIDA -->
+                <div id="pantalla-dividida" class="pantalla">
+
+                    <!-- VISOR 1: MediaPipe (Tu Iris) -->
+                    <section id="ventana-mp" class="ventana">
+                        <h3 class="titulo-ventana">Tu Iris (¿Dónde Mirás?)</h3>
+                        <video id="video-mp" playsinline muted></video>
+                        <div id="puntero"></div>
+                    </section>
+
+                    <!-- VISOR 2: OpenCV (El Entorno) -->
+                    <section id="ventana-cv" class="ventana">
+                        <h3 class="titulo-ventana">El Entorno (Oscurece si mirás)</h3>
+                        <video id="video-cv" playsinline muted></video>
+                    </section>
+
+                    <!-- Aviso cuando la cámara está apagada -->
+                    <div id="aviso-apagado" class="aviso-apagado" hidden>
+                        <p>Cámara apagada</p>
+                        <small>Presiona el botón de encendido</small>
+                    </div>
+
+                </div>
+
+                <span class="marca" aria-hidden="true">FOCUS SCROLL</span>
+                <span class="led" aria-hidden="true"></span>
+
+                <!-- Escritorio: botón físico del TV · Móvil: botón en pantalla -->
+                <button id="btn-camara" class="btn-camara" type="button"
+                        title="Apagar cámara" disabled>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M12 3v8" />
+                        <path d="M6.3 6.8a8 8 0 1 0 11.4 0" />
+                    </svg>
+                    <span class="btn-texto">Apagar cámara</span>
+                </button>
+            </div>
+
+            <div class="soporte" aria-hidden="true">
+                <div class="cuello"></div>
+                <div class="base"></div>
+            </div>
         </div>
-
-        <!-- VENTANA 2: OpenCV (El Entorno) -->
-        <div id="ventana-cv" class="ventana">
-            <h3 class="titulo-ventana">El Entorno (Oscurece si mirás)</h3>
-            <video id="video-cv" playsinline muted></video>
-        </div>
-
-    </div>
-
-    <script src="main.js"></script>
+    </main>
 
 </body>
 </html>
