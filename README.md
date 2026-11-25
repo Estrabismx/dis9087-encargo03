@@ -8,56 +8,34 @@ encargo03 · MediaPipe + OpenCV
 
 ## Índice
 
-1. [Encuentro](#encuentro)
-2. [Objetivo](#objetivo)
-3. [¿De qué se trata?](#de-qué-se-trata)
-4. [Instructivo de uso](#instructivo-de-uso)
-5. [Cómo funciona (referencia técnica)](#cómo-funciona-referencia-técnica)
-6. [Ajustar la herramienta](#ajustar-la-herramienta)
-7. [Solución de problemas](#solución-de-problemas)
-8. [Estructura del proyecto](#estructura-del-proyecto)
-9. [Reflexión](#reflexión)
+1. [Licencia](#licencia)
+2. [Cómo ocuparlo](#cómo-ocuparlo)
+3. [Encuentro](#encuentro)
+4. [Objetivo](#objetivo)
+5. [¿De qué trata?](#de-qué-trata)
+6. [Cómo funciona](#cómo-funciona)
 
 ---
 
-## Encuentro
+## Licencia
 
-Empezó con una pregunta simple: ¿Qué pasa cuando estamos tan enfocados en la pantalla que no vemos nada más?
+[![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](LICENSE)
 
-Todos los días vemos a personas scrolleando sin parar. El teléfono consume toda la atención. El mundo afuera podría desaparecer y no nos enteraríamos. Así que decidimos hacerlo literal.
+Este proyecto se distribuye bajo la **licencia MIT**. El texto completo está en [LICENSE](LICENSE).
 
-La intención final fue construir un sistema que visualice esa paradoja: mientras más concentrado estés en tu pantalla, más desaparece el entorno. La pantalla se oscurece cuando hay movimiento a tu alrededor.
+**Autores:** Camila Ramírez y Facundo Cabrera Artus (2026).
 
-## Objetivo
+Puedes usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y vender copias del proyecto, incluso con fines comerciales, siempre que:
 
-Este proyecto fusiona dos comportamientos diarios presentes en la rutina de millones de personas:
+- Incluyas el aviso de copyright y el texto de la licencia en todas las copias o partes sustanciales del proyecto.
 
-1. Una persona concentrada "scrolleando en su celular", aislándose del entorno y de toda acción que pase a su alrededor.
-2. El transcurso diario que está presente en situaciones cotidianas.
+El proyecto se entrega "tal cual", sin garantías de ningún tipo.
 
-Quisimos revelar cómo se interpretaría de manera visual este comportamiento, activando detectores de movimiento y de concentración del sujeto mediante un punto fijo en la pantalla.
-
-## ¿De qué se trata?
-
-Hay dos sistemas de inteligencia que se ejecutan al mismo tiempo con la misma cámara: uno detecta el movimiento que ocurre dentro de su rango y el otro detecta hacia dónde está mirando la persona.
-
-### Sistema A: El Movimiento (OpenCV)
-
-Detectamos todo lo que se mueve en el rango de la cámara. Cualquier cambio, cualquier gesto, cualquier persona pasando. Si hay movimiento, la pantalla comienza a oscurecerse progresivamente.
-
-Es como si el entorno estuviera desapareciendo mientras hablas con tu teléfono.
-
-### Sistema B: La Mirada (MediaPipe)
-
-Pero necesitábamos ser más inteligentes. El movimiento solo debería importar cuando *tú* no lo estás viendo. El sistema tiene que saber dónde está tu atención.
-
-Entonces rastreamos tu rostro. Mientras tu vista esté fija en la pantalla, el sistema entiende que ese movimiento sí te afecta: que deberías verlo, pero no lo ves.
-
-MediaPipe valida lo que OpenCV ve. Es como una segunda opinión que hace al sistema más preciso.
+> Las librerías externas que usa el proyecto (MediaPipe y OpenCV.js) mantienen sus propias licencias (Apache 2.0).
 
 ---
 
-## Instructivo de uso
+## Cómo ocuparlo
 
 ### Requisitos
 
@@ -108,9 +86,72 @@ Elige una de estas opciones:
 
 Todo el procesamiento ocurre **en tu propio navegador**. El video **no se envía ni se guarda** en ningún servidor; internet solo se usa para descargar las librerías.
 
+### Solución de problemas
+
+| Problema | Causa probable | Solución |
+| --- | --- | --- |
+| Se queda en "Esperando OpenCV…" | Conexión lenta o bloqueada | Espera unos segundos más o recarga. Verifica que no haya bloqueadores de contenido. |
+| "Error de Cámara. Revisa permisos." | Permiso denegado o cámara usada por otra app | Permite la cámara desde el ícono de candado de la barra de direcciones y cierra otras apps que la usen (Zoom, Teams, etc.). |
+| No funciona en el celular | La página no está en HTTPS | Publícala con GitHub Pages u otro hosting con HTTPS. |
+| La mira no aparece | No se detecta el rostro | Mejora la iluminación y ubica el rostro completo frente a la cámara. |
+| La mira está siempre roja | No se detecta la postura "mirando hacia abajo" | Baja un poco más la vista, o baja `THRESHOLD_ENFOQUE` (por ejemplo, a `0.35`). |
+| Se oscurece sin movimiento | Ruido de la cámara | Sube `UMBRAL_PIXEL` o `UMBRAL_MOVIMIENTO`. |
+| Va lento o con saltos | Equipo con poca CPU | Baja `FPS_LIMIT` a 12–15 o `ALTO_ANALISIS` a 180. |
+
 ---
 
-## Cómo funciona (referencia técnica)
+## Encuentro
+
+Empezó con una pregunta simple: ¿Qué pasa cuando estamos tan enfocados en la pantalla que no vemos nada más?
+
+Todos los días vemos a personas scrolleando sin parar. El teléfono consume toda la atención. El mundo afuera podría desaparecer y no nos enteraríamos. Así que decidimos hacerlo literal.
+
+La intención final fue construir un sistema que visualice esa paradoja: mientras más concentrado estés en tu pantalla, más desaparece el entorno. La pantalla se oscurece cuando hay movimiento a tu alrededor.
+
+## Objetivo
+
+Este proyecto fusiona dos comportamientos diarios presentes en la rutina de millones de personas:
+
+1. Una persona concentrada "scrolleando en su celular", aislándose del entorno y de toda acción que pase a su alrededor.
+2. El transcurso diario que está presente en situaciones cotidianas.
+
+Quisimos revelar cómo se interpretaría de manera visual este comportamiento, activando detectores de movimiento y de concentración del sujeto mediante un punto fijo en la pantalla.
+
+## ¿De qué trata?
+
+Hay dos sistemas de inteligencia que se ejecutan al mismo tiempo con la misma cámara: uno detecta el movimiento que ocurre dentro de su rango y el otro detecta hacia dónde está mirando la persona.
+
+### Sistema A: El Movimiento (OpenCV)
+
+Detectamos todo lo que se mueve en el rango de la cámara. Cualquier cambio, cualquier gesto, cualquier persona pasando. Si hay movimiento, la pantalla comienza a oscurecerse progresivamente.
+
+Es como si el entorno estuviera desapareciendo mientras hablas con tu teléfono.
+
+### Sistema B: La Mirada (MediaPipe)
+
+Pero necesitábamos ser más inteligentes. El movimiento solo debería importar cuando *tú* no lo estás viendo. El sistema tiene que saber dónde está tu atención.
+
+Entonces rastreamos tu rostro. Mientras tu vista esté fija en la pantalla, el sistema entiende que ese movimiento sí te afecta: que deberías verlo, pero no lo ves.
+
+MediaPipe valida lo que OpenCV ve. Es como una segunda opinión que hace al sistema más preciso.
+
+### Reflexión
+
+No te dice qué hacer con tu pantalla. No te juzga por mirar. Solo te muestra, de manera literal y visual, lo que sucede cuando lo haces: el mundo a tu alrededor desaparece.
+
+Mientras más concentrado estés en la pantalla, más oscuro se vuelve todo lo demás. Y cuando levantas la vista, todo vuelve. Pero el tiempo se perdió.
+
+No es una lección. Es una observación.
+
+La mayoría de nosotros sabemos que las pantallas nos absorben. Lo vivimos. Pero ver cómo el entorno se desvanece físicamente en tiempo real es diferente. Es hacer visible lo invisible.
+
+Y eso, simple, te hace pensar.
+
+¿Qué estoy perdiendo mientras miro esto? ¿Quién está cerca que no veo? ¿Vale la pena?
+
+---
+
+## Cómo funciona
 
 ```text
             ┌──────────── Cámara (getUserMedia) ────────────┐
@@ -153,9 +194,7 @@ En cada ciclo (máximo 20 por segundo):
 - Si la persona **está enfocada** y el movimiento supera el umbral, la opacidad del visor del entorno baja **de inmediato** en proporción al movimiento.
 - Si deja de haber movimiento o la persona levanta la vista, la imagen se **recupera lentamente** (+2,5 % por ciclo). Esa lentitud representa el tiempo que "se perdió".
 
----
-
-## Ajustar la herramienta
+### 4. Ajustar la herramienta
 
 Todos los parámetros están al inicio de [main.js](main.js):
 
@@ -171,48 +210,17 @@ Todos los parámetros están al inicio de [main.js](main.js):
 
 **Recomendación:** si la imagen se oscurece sin que nadie se mueva (habitación oscura, cámara con ruido), sube primero `UMBRAL_PIXEL` a 18–20.
 
----
-
-## Solución de problemas
-
-| Problema | Causa probable | Solución |
-| --- | --- | --- |
-| Se queda en "Esperando OpenCV…" | Conexión lenta o bloqueada | Espera unos segundos más o recarga. Verifica que no haya bloqueadores de contenido. |
-| "Error de Cámara. Revisa permisos." | Permiso denegado o cámara usada por otra app | Permite la cámara desde el ícono de candado de la barra de direcciones y cierra otras apps que la usen (Zoom, Teams, etc.). |
-| No funciona en el celular | La página no está en HTTPS | Publícala con GitHub Pages u otro hosting con HTTPS. |
-| La mira no aparece | No se detecta el rostro | Mejora la iluminación y ubica el rostro completo frente a la cámara. |
-| La mira está siempre roja | No se detecta la postura "mirando hacia abajo" | Baja un poco más la vista, o baja `THRESHOLD_ENFOQUE` (por ejemplo, a `0.35`). |
-| Se oscurece sin movimiento | Ruido de la cámara | Sube `UMBRAL_PIXEL` o `UMBRAL_MOVIMIENTO`. |
-| Va lento o con saltos | Equipo con poca CPU | Baja `FPS_LIMIT` a 12–15 o `ALTO_ANALISIS` a 180. |
-
----
-
-## Estructura del proyecto
+### 5. Estructura del proyecto
 
 ```text
 ├── index.html   Estructura de la página: marco (TV/celular), visores y botón de cámara
 ├── style.css    Diseño: marco de TV (escritorio), celular (móvil), mira y estados
 ├── main.js      Lógica: cámara, MediaPipe, OpenCV, conexión entre sistemas y botón
 ├── README.md    Este documento
-└── LICENSE
+└── LICENSE      Licencia MIT
 ```
 
 **Librerías externas** (se cargan desde CDN, no requieren instalación):
+
 - [MediaPipe Face Mesh](https://github.com/google-ai-edge/mediapipe) `0.4.1633559619`
 - [OpenCV.js](https://docs.opencv.org/4.8.0/) `4.8.0`
-
----
-
-## Reflexión
-
-No te dice qué hacer con tu pantalla. No te juzga por mirar. Solo te muestra, de manera literal y visual, lo que sucede cuando lo haces: el mundo a tu alrededor desaparece.
-
-Mientras más concentrado estés en la pantalla, más oscuro se vuelve todo lo demás. Y cuando levantas la vista, todo vuelve. Pero el tiempo se perdió.
-
-No es una lección. Es una observación.
-
-La mayoría de nosotros sabemos que las pantallas nos absorben. Lo vivimos. Pero ver cómo el entorno se desvanece físicamente en tiempo real es diferente. Es hacer visible lo invisible.
-
-Y eso, simple, te hace pensar.
-
-¿Qué estoy perdiendo mientras miro esto? ¿Quién está cerca que no veo? ¿Vale la pena?
