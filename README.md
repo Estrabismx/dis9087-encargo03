@@ -35,6 +35,11 @@ El proyecto se entrega "tal cual", sin garantías de ningún tipo.
 
 ---
 
+## Funcionamiento
+
+[![](https://img.youtube.com/vi/8l8heRCfXrc/0.jpg)](https://www.youtube.com/watch?v=8l8heRCfXrc)
+
+
 ## Cómo ocuparlo
 
 ### Requisitos
